@@ -4,10 +4,6 @@ import time
 import logging
 import requests
 from pathlib import Path
-from dotenv import load_dotenv
-
-# Load environment
-load_dotenv()
 
 # Configure logging
 logging.basicConfig(

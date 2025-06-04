@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import requests
 
 import captions
 from visuals import (
@@ -41,11 +42,14 @@ def generate_and_download_images(script: dict) -> dict:
             download_content(image_url, str(img_path))
 
             upscaled_path = img_path.parent / f"upscaled_{img_path.name}"
-            curl_cmd = (
-                f'curl -s -X POST "http://192.168.1.154:5700/upscale?model=x4" '
-                f'-F "file=@{img_path}" --output {upscaled_path}'
-            )
-            os.system(curl_cmd)
+            with open(img_path, "rb") as f:
+                resp = requests.post(
+                    "http://192.168.1.154:5700/upscale?model=x4",
+                    files={"file": f},
+                    timeout=600,
+                )
+                resp.raise_for_status()
+                upscaled_path.write_bytes(resp.content)
             segment["visual"]["image_path"] = str(upscaled_path)
     return script
 

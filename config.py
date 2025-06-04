@@ -1,6 +1,10 @@
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment once so other modules can simply import config
+load_dotenv()
 
 # TTS Settings
 tts_default_speaker = os.getenv('TTS_SPEAKER', 'p228')
