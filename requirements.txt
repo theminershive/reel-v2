@@ -19,4 +19,3 @@ torch~=2.2
 pynvml~=11.5
 soundfile~=0.12
 uvicorn~=0.29
-TTS
