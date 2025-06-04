@@ -13,9 +13,18 @@ app = Flask(__name__)
 jobs = {}
 
 
-def worker(job_id, topic, length, voice, style):
+def worker(job_id, topic, length, voice, style, num_sections, num_segments, prompt_template, topic_prompt):
     try:
-        video = run_pipeline(topic, int(length), voice, style)
+        video = run_pipeline(
+            topic,
+            int(length),
+            voice,
+            style,
+            num_sections=num_sections,
+            num_segments=num_segments,
+            prompt_template=prompt_template,
+            topic_prompt=topic_prompt,
+        )
         jobs[job_id] = {"status": "done", "video": video}
     except Exception as e:
         jobs[job_id] = {"status": "error", "message": str(e)}
@@ -28,13 +37,20 @@ def index():
 
 @app.route("/start", methods=["POST"])
 def start():
-    topic = request.form.get("topic")
+    topic = request.form.get("topic", "")
     length = request.form.get("length", 60)
     voice = request.form.get("voice")
     style = request.form.get("style")
+    num_sections = int(request.form.get("num_sections", 3))
+    num_segments = int(request.form.get("num_segments", 3))
+    prompt_template = request.form.get("prompt_template") or None
+    topic_prompt = request.form.get("topic_prompt") or None
     job_id = str(uuid.uuid4())
     jobs[job_id] = {"status": "running"}
-    t = threading.Thread(target=worker, args=(job_id, topic, length, voice, style))
+    t = threading.Thread(
+        target=worker,
+        args=(job_id, topic, length, voice, style, num_sections, num_segments, prompt_template, topic_prompt),
+    )
     t.start()
     return render_template("status.html", job_id=job_id)
 
