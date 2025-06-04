@@ -61,9 +61,6 @@ The repository includes optional servers:
 
 ## Development notes
 
-Helper utilities such as `generate_and_download_images` and `create_captions`
-have been moved into `workflow_utils.py` for reuse across the apps. The former
-`patch.py` script used for ad-hoc fixes has been removed.
 
 ## License
 
