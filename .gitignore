@@ -2,6 +2,12 @@
 !*.py
 !*.json
 !*.txt
+!*.html
+!*.css
+!static/
+!static/**
+!templates/
+!templates/**
 !README.md
 !requirements.txt
 client_secret.json

@@ -74,7 +74,8 @@ def select_background_music_via_gpt(topic, music_options):
         return "neutral"
 
 
-def generate_video_script(topic, length, size, num_sections, num_segments):
+def generate_video_script(topic, length, size, num_sections, num_segments,
+                          voice=None, style=None):
     try:
         TARGET_MAIN_SEGMENT_DURATION = 4
         TARGET_SEGUE_SEGMENT_DURATION = 2
@@ -185,9 +186,17 @@ def generate_video_script(topic, length, size, num_sections, num_segments):
                 seg.setdefault('sound', {})['transition_effect'] = seg['sound'].get('transition_effect', generate_transition_effect())
 
         combined = ' '.join(seg['narration']['text'] for sec in script_data['sections'] for seg in sec.get('segments', []))
-        script_data['tone'] = select_voice(combined)
-        style, info = select_style(combined)
-        script_data['image_style'] = style
+        if voice:
+            script_data['tone'] = voice
+        else:
+            script_data['tone'] = select_voice(combined)
+
+        if style:
+            script_data['image_style'] = style
+            info = MODELS.get(style, {})
+        else:
+            style, info = select_style(combined)
+            script_data['image_style'] = style
         bg = select_background_music_via_gpt(topic, ["cinematic","ambient","suspense","upbeat","melodic","neutral","inspiring","dramatic"])
         script_data['background_music'] = bg
         script_data['background_music_type'] = bg
