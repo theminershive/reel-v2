@@ -25,12 +25,18 @@ TOKEN_OVERLAP_THRESHOLD = 3
 STOPWORDS = {"the", "of", "and", "a", "an", "to", "in", "on", "for", "with", "without", "new", "?", "!", ":"}
 PROMPT_FILE = os.getenv("TOPIC_PROMPT_FILE", "topic_prompt.txt")
 
-# Load system prompt
-try:
-    with open(PROMPT_FILE, "r") as f:
-        SYSTEM_PROMPT = f.read()
-except FileNotFoundError:
-    raise FileNotFoundError(f"Prompt file '{PROMPT_FILE}' not found.")
+
+def load_system_prompt(custom_prompt: str | None = None) -> str:
+    """Return the system prompt text."""
+    if custom_prompt is not None:
+        return custom_prompt
+    try:
+        with open(PROMPT_FILE, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Prompt file '{PROMPT_FILE}' not found.")
+
+SYSTEM_PROMPT = load_system_prompt()
 
 # Load topic history
 def load_history():
@@ -125,6 +131,23 @@ def parse_suggestions(raw: str) -> list[dict]:
         s["segments_per_section"] = s["segments_per_section"] or max(1, round(s["length"] / 11) // s["sections"])
     return suggestions
 
+
+def generate_topic(custom_prompt: str) -> dict | None:
+    """Generate a single topic suggestion using the provided prompt."""
+    messages = [
+        {"role": "system", "content": load_system_prompt(custom_prompt)},
+        {"role": "user", "content": "Generate one short-form video idea."},
+    ]
+    resp = openai.ChatCompletion.create(
+        model=MODEL,
+        messages=messages,
+        temperature=0.8,
+        max_tokens=1000,
+    )
+    raw = resp["choices"][0]["message"]["content"]
+    suggestions = parse_suggestions(raw)
+    return suggestions[0] if suggestions else None
+
 # Heuristic scoring
 def score_feasibility(title: str) -> tuple[int, str]:
     t = title.lower()
@@ -137,7 +160,7 @@ def score_feasibility(title: str) -> tuple[int, str]:
     return 4, "Moderate – manageable with creative AI & stock assets."
 
 # MAIN: Generate & save topic with retry loop
-def generate_daily_video_idea() -> None:
+def generate_daily_video_idea(system_prompt: str | None = None) -> None:
     history = load_history()
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
     used_today = [h["title"] for h in history if h["date"] == today_str]
@@ -147,8 +170,8 @@ def generate_daily_video_idea() -> None:
         "Generate five fresh short-form video ideas."
     )
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": base_prompt}
+        {"role": "system", "content": load_system_prompt(system_prompt)},
+        {"role": "user", "content": base_prompt},
     ]
     max_attempts = 3
     for attempt in range(max_attempts):

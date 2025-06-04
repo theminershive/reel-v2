@@ -74,8 +74,16 @@ def select_background_music_via_gpt(topic, music_options):
         return "neutral"
 
 
-def generate_video_script(topic, length, size, num_sections, num_segments,
-                          voice=None, style=None):
+def generate_video_script(
+    topic,
+    length,
+    size,
+    num_sections,
+    num_segments,
+    voice=None,
+    style=None,
+    prompt_template=None,
+):
     try:
         TARGET_MAIN_SEGMENT_DURATION = 4
         TARGET_SEGUE_SEGMENT_DURATION = 2
@@ -161,9 +169,12 @@ def generate_video_script(topic, length, size, num_sections, num_segments,
 
         prompt_json = json.dumps(script_json, indent=4)
 
-        template_path = os.path.join(os.path.dirname(__file__), 'prompt_template.txt')
-        with open(template_path, 'r') as template_file:
-            template = template_file.read()
+        if prompt_template:
+            template = prompt_template
+        else:
+            template_path = os.path.join(os.path.dirname(__file__), 'prompt_template.txt')
+            with open(template_path, 'r') as template_file:
+                template = template_file.read()
         prompt = template.format(length=length, topic=topic, prompt_json=prompt_json,
                                  num_sections=num_sections, num_segments=num_segments)
 

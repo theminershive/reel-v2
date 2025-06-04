@@ -12,12 +12,20 @@
     <h1 class="mb-4">AI Video Generator</h1>
     <form action="/start" method="post">
         <div class="mb-3">
-            <label for="topic" class="form-label">Topic</label>
-            <input type="text" class="form-control" id="topic" name="topic" required>
+            <label for="topic" class="form-label">Topic (leave blank to auto-generate)</label>
+            <input type="text" class="form-control" id="topic" name="topic">
         </div>
         <div class="mb-3">
             <label for="length" class="form-label">Length (seconds)</label>
             <input type="number" class="form-control" id="length" name="length" value="60" min="10" max="300" required>
+        </div>
+        <div class="mb-3">
+            <label for="num_sections" class="form-label">Sections</label>
+            <input type="number" class="form-control" id="num_sections" name="num_sections" value="3" min="1" max="10">
+        </div>
+        <div class="mb-3">
+            <label for="num_segments" class="form-label">Segments per Section</label>
+            <input type="number" class="form-control" id="num_segments" name="num_segments" value="3" min="1" max="12">
         </div>
         <div class="mb-3">
             <label for="voice" class="form-label">Voice</label>
@@ -34,6 +42,14 @@
                 <option value="{{s}}">{{s}}</option>
                 {% endfor %}
             </select>
+        </div>
+        <div class="mb-3">
+            <label for="prompt_template" class="form-label">Script Prompt Template (optional)</label>
+            <textarea class="form-control" id="prompt_template" name="prompt_template" rows="4"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="topic_prompt" class="form-label">Topic Prompt Template (optional)</label>
+            <textarea class="form-control" id="topic_prompt" name="topic_prompt" rows="3"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Create Video</button>
     </form>
