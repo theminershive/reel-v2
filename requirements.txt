@@ -18,5 +18,4 @@ diffusers~=0.27
 torch~=2.2
 pynvml~=11.5
 soundfile~=0.12
-TTS~=0.22
 uvicorn~=0.29
