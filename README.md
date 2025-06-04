@@ -61,7 +61,6 @@ The repository includes optional servers:
 
 ## Development notes
 
-The project evolved organically and contains some duplicated helper functions (for example the `generate_and_download_images` and `create_captions` functions appear in both `app.py` and `app_upscale.py`).  A future cleanup could consolidate these utilities into shared modules.  The `patch.py` script was used for ad‑hoc fixes and is no longer required.
 
 ## License
 

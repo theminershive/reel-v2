@@ -10,10 +10,11 @@ logging.getLogger("PIL").setLevel(logging.WARNING)
 
 from narration_and_style import generate_video_script
 from visuals_and_social import enrich_script
-from visuals import get_model_config_by_style, generate_image, poll_generation_status, extract_image_url, download_content
+
 from tts import process_tts
 from video_assembler import assemble_video
 import captions
+from workflow_utils import generate_and_download_images, create_captions
 from overlay import add_text_overlay
 from config import VISUALS_DIR, VIDEO_SCRIPTS_DIR, FINAL_VIDEO_DIR
 
@@ -37,41 +38,7 @@ def get_user_input():
     num_segments = int(input("Enter number of segments per section: "))
     return topic, current_info, size, length, num_sections, num_segments
 
-def generate_and_download_images(script):
-    model_config = get_model_config_by_style(script["settings"]["image_generation_style"])
-    for section in script["sections"]:
-        for segment in section["segments"]:
-            prompt = segment["visual"]["prompt"]
-            generation_id = generate_image(prompt, model_config)
-            if not generation_id:
-                raise RuntimeError(f"Failed to start image generation for prompt: {prompt}")
-            data = poll_generation_status(generation_id)
-            if not data:
-                raise RuntimeError("Image generation did not complete.")
-            image_url = extract_image_url(data)
-            if not image_url:
-                raise RuntimeError("Could not extract image URL.")
-            img_filename = f"section_{section['section_number']}_segment_{segment['segment_number']}.png"
-            img_path = VISUALS_DIR / img_filename
-            download_content(image_url, str(img_path))
 
-            # Upscale the image using local server
-            upscaled_path = img_path.parent / f"upscaled_{img_path.name}"
-            curl_cmd = f'curl -s -X POST "http://192.168.1.154:5700/upscale?model=x4" -F "file=@{img_path}" --output {upscaled_path}'
-            os.system(curl_cmd)
-            segment["visual"]["image_path"] = str(upscaled_path)
-    return script
-
-def create_captions(video_path):
-    audio_temp = captions.extract_audio(video_path)
-    transcription = captions.transcribe_audio_whisper(audio_temp)
-    cap_list = captions.generate_captions_from_whisper(transcription)
-    try:
-        if audio_temp and Path(audio_temp).exists():
-            Path(audio_temp).unlink()
-    except Exception:
-        pass
-    return cap_list
 
 def main():
     parser = argparse.ArgumentParser(description="Run video workflow interactively or with a plan JSON.")
