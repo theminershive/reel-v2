@@ -36,6 +36,10 @@ SMTP_PASSWORD=<smtp password>
 EMAIL_RECIPIENT=<your email>
 ```
 
+The `config` module now loads this file automatically, so simply importing
+`config` ensures all environment variables are available throughout the
+project.
+
 Additional variables such as `WHISPER_API_URL` or `LOCAL_TTS_URL` can be used to point to your local services.  See the code for the full list.
 
 ## Usage

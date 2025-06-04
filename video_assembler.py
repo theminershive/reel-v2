@@ -4,7 +4,6 @@ import time
 import sys
 import importlib
 from pathlib import Path
-from dotenv import load_dotenv
 from PIL import Image
 
 # Ensure PIL ANTIALIAS compatibility
@@ -33,7 +32,6 @@ NARRATION_INITIAL_DELAY = 0.25  # start narration .25s after visual begins
 END_EXTENSION = 0.5             # extend visuals and bg music .5s after narration ends
 
 # -------------------- Environment --------------------
-load_dotenv()
 
 BANNED_SONGS = [
     "Upbeat Piano and Trumpet for Joyful Moments",
@@ -179,10 +177,11 @@ def assemble_video(script_json_path):
             dur = seg['narration'].get('duration', 0)
             ap = seg['narration'].get('audio_path')
             if ap and os.path.exists(ap):
+                audio_clip = AudioFileClip(ap)
                 start = timeline + (NARRATION_INITIAL_DELAY if first else 0)
-                narrs.append(AudioFileClip(ap).set_start(start))
+                narrs.append(audio_clip.set_start(start))
                 first = False
-                dur = AudioFileClip(ap).duration
+                dur = audio_clip.duration
             img = seg.get('visual',{}).get('image_path')
             if img and os.path.exists(img):
                 ic = ImageClip(img).resize(VIDEO_SIZE)
@@ -234,12 +233,25 @@ def assemble_video(script_json_path):
         final = base.set_duration(bd).set_audio(combined)
         print(f"[VERBOSE] Writing final video with BG to: {final_path}")
         final.write_videofile(str(final_path), fps=FPS, codec='libx264', audio_codec='aac')
+        ba.close()
+        base.close()
+        final.close()
     else:
         raw_path.rename(final_path)
 
     data['raw_video'] = str(raw_path)
     data['final_video'] = str(final_path)
     Path(script_json_path).write_text(json.dumps(data, indent=2))
+
+    # clean up open clips
+    for clip in narrs + trans_auds:
+        try:
+            clip.close()
+        except Exception:
+            pass
+    video.close()
+    raw_audio.close()
+    raw_vid.close()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:

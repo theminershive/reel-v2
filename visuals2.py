@@ -4,7 +4,6 @@ import time
 import requests
 import logging
 from pathlib import Path
-from dotenv import load_dotenv
 from urllib.parse import urlparse
 
 # Configure logging
@@ -17,8 +16,6 @@ logging.basicConfig(
     ]
 )
 
-# Load environment variables from .env file
-load_dotenv()
 
 # Configuration
 API_KEY = os.getenv('LEONARDO_API_KEY')

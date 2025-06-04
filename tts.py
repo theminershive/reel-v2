@@ -1,12 +1,8 @@
 import os
 import json
 import requests
-from dotenv import load_dotenv
 from pathlib import Path
-from config import tts_default_speaker, tts_default_language
-
-# Load environment variables
-load_dotenv()
+from config import tts_default_speaker, tts_default_language  # config loads .env
 
 # Constants
 LOCAL_TTS_URL = os.getenv("LOCAL_TTS_URL", "http://192.168.1.154:5500")
