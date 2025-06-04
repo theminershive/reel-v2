@@ -1,0 +1,13 @@
+*
+!*.py
+!*.json
+!*.txt
+!README.md
+!requirements.txt
+client_secret.json
+client_secret2.json
+__pycache__/
+venv/
+*.log
+token2.json
+token2.json
