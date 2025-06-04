@@ -204,10 +204,18 @@ def assemble_video(script_json_path):
         return
 
     video = concatenate_videoclips(clips, method='compose')
-    total_dur = video.duration
 
-    raw_audio = CompositeAudioClip(narrs + trans_auds).set_duration(total_dur - END_EXTENSION)
-    raw_vid = video.set_audio(raw_audio)
+    audio_end = 0.0
+    for ac in narrs + trans_auds:
+        try:
+            audio_end = max(audio_end, ac.end)
+        except Exception:
+            audio_end = max(audio_end, ac.start + ac.duration)
+
+    total_dur = max(video.duration, audio_end + END_EXTENSION)
+
+    raw_audio = CompositeAudioClip(narrs + trans_auds).set_duration(total_dur)
+    raw_vid = video.set_duration(total_dur).set_audio(raw_audio)
     raw_path = Path(FINAL_VIDEO_DIR) / f"{Path(script_json_path).stem}_raw.mp4"
     raw_vid.write_videofile(str(raw_path), fps=FPS, codec='libx264', audio_codec='aac')
 
