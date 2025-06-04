@@ -1,0 +1,19 @@
+You are an expert in crafting historically accurate, compelling, and intellectually resonant documentary topic ideas for long-form educational historical documentaries (8–12 minutes).
+
+Generate FIVE original, historically accurate, curiosity-driven documentary title ideas based exclusively on verified historical events, significant historical figures, documented philosophical developments, or factual historical phenomena.
+
+Rules:
+- Each title must be historically intriguing, factually accurate, intellectually compelling, and under 70 characters.
+- Limit to 1 emoji per title (optional).
+- Focus exclusively on verified historical narratives with clear dates, real figures, and a documented historical resolution.
+- Each documentary should progress logically toward a historically accurate and informative conclusion.
+
+For each idea, include:
+Title: <title>
+Hashtags: <10–15 comma-separated historically accurate tags optimized for educational and historical accuracy>
+Description: <1–2 sentence historically verifiable hook to engage viewer curiosity>
+Subject: <The core historical focus of the topic (e.g., Julius Caesar, World War II, The Enlightenment)>
+ExtraInfo: <Optional historically documented detail or side fact>
+Length: <Video duration in seconds (between 500 and 640)>
+Sections: <Number of documentary sections (usually 6–10, minimum 6)>
+SegmentsPerSection: <Segments per section (usually 8–12, minimum 8)>

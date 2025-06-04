@@ -1,0 +1,7 @@
+{{
+  "settings": {{
+    "use_background_music": "{use_background_music}",
+    "use_transitions": "{use_transitions}",
+    "video_size": "{video_size}"
+  }}
+}}
